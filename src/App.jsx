@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Table from './components/Table';
 import Filters from './components/Filters';
+import CarDetails from './components/CarDetails';
 
+
+const getRandomCoordinates = () => {
+  const latitude = (Math.random() * 180 - 90).toFixed(6); // Latitud entre -90 y 90
+  const longitude = (Math.random() * 360 - 180).toFixed(6); // Longitud entre -180 y 180
+  return { lat: parseFloat(latitude), lon: parseFloat(longitude) };
+};
 const App = () => {
   const [filters, setFilters] = useState({
     make: '',
@@ -19,18 +26,18 @@ const App = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [carsPerPage] = useState(20);
+  const [selectedCar, setSelectedCar] = useState(null);
+  const [currentView, setCurrentView] = useState('table'); // 'table' or 'details'
 
   const fetchCars = async (filters) => {
     setLoading(true);
     setError(null);
     try {
-      // Construir la consulta basada en los filtros
       let queryString = Object.keys(filters)
         .filter(key => filters[key] && filters[key] !== '' && key !== 'combinedConsumptionMin' && key !== 'combinedConsumptionMax')
         .map(key => `${key}=${encodeURIComponent(filters[key])}`)
         .join('&');
-      
-      // Manejar el rango de consumo combinado
+
       if (filters.combinedConsumptionMin || filters.combinedConsumptionMax) {
         const consumptionQuery = [
           filters.combinedConsumptionMin && `min_comb_mpg=${filters.combinedConsumptionMin}`,
@@ -40,17 +47,13 @@ const App = () => {
         queryString += (queryString ? '&' : '') + consumptionQuery;
       }
       
-      // Si no hay filtros activos, agregar `model=all`
       if (!queryString) {
         queryString = 'model=all';
       }
   
-      // Agregar `limit=200` al final
       const url = `https://api.api-ninjas.com/v1/cars?${queryString}&limit=200`;
-      
-      // Solicitar datos de la API
       const response = await fetch(url, {
-        headers: { 'X-Api-Key': process.env.REACT_APP_API_KEY },
+        headers: { 'X-Api-Key': '0lyH8RlORS9lOZmumIF3Wg==8rkTtPC2E6lsnH5i' },
       });
       
       if (!response.ok) {
@@ -64,15 +67,12 @@ const App = () => {
       setLoading(false);
     }
   };
-  
-  
 
   useEffect(() => {
     fetchCars(filters);
   }, [filters]);
 
   useEffect(() => {
-    // Calcular los coches que se deben mostrar en la página actual
     const indexOfLastCar = currentPage * carsPerPage;
     const indexOfFirstCar = indexOfLastCar - carsPerPage;
     setDisplayCars(allCars.slice(indexOfFirstCar, indexOfLastCar));
@@ -80,29 +80,43 @@ const App = () => {
 
   const totalPages = Math.ceil(allCars.length / carsPerPage);
 
-  return (
-<div className="flex flex-col lg:flex-row">
-  <aside className="w-full lg:w-1/4 p-4">
-    <Filters filters={filters} setFilters={setFilters} applyFilters={fetchCars} />
-  </aside>
-  <main className="flex-grow">
-    <header className="bg-gray-800 text-white py-4 px-6">
-      <h1 className="text-2xl font-bold">Información de Autos</h1>
-    </header>
-    <div className="p-4 border-1 border-gray-100 shadow-md">
-      <Table
-        className="table-auto"
-        cars={displayCars}
-        loading={loading}
-        error={error}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        setCurrentPage={setCurrentPage}
-      />
-    </div>
-  </main>
-</div>
+  const handleSelectCar = (car) => {
+    // Usar la función para obtener coordenadas aleatorias en todo el mundo
+    const coordinates = getRandomCoordinates();
+    setSelectedCar({ ...car, location: coordinates });
+    setCurrentView('details');
+  };
 
+  return (
+    <div className="flex flex-col lg:flex-row h-screen font-roboto">
+      {currentView === 'table' ? (
+        <>
+          <aside className="w-full lg:w-1/4 p-4">
+            <Filters filters={filters} setFilters={setFilters} applyFilters={fetchCars} />
+          </aside>
+          <main className="flex-grow">
+            <header className="bg-gray-800 text-white py-4 px-6">
+              <h1 className="text-2xl font-bold">Información de Autos</h1>
+            </header>
+            <div className="p-4 border-1 border-gray-100 shadow-md">
+              <Table
+                cars={displayCars}
+                loading={loading}
+                error={error}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+                onSelectCar={handleSelectCar}
+              />
+            </div>
+          </main>
+        </>
+      ) : (
+        <main className="flex-grow">
+          <CarDetails car={selectedCar} onBack={() => setCurrentView('table')} />
+        </main>
+      )}
+    </div>
   );
 }
 
