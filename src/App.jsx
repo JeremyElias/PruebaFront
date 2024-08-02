@@ -53,7 +53,7 @@ const App = () => {
   
       const url = `https://api.api-ninjas.com/v1/cars?${queryString}&limit=200`;
       const response = await fetch(url, {
-        headers: { 'X-Api-Key': '0lyH8RlORS9lOZmumIF3Wg==8rkTtPC2E6lsnH5i' },
+        headers: { 'X-Api-Key': process.env.REACT_APP_API_KEY },
       });
       
       if (!response.ok) {
@@ -81,42 +81,44 @@ const App = () => {
   const totalPages = Math.ceil(allCars.length / carsPerPage);
 
   const handleSelectCar = (car) => {
-    // Usar la función para obtener coordenadas aleatorias en todo el mundo
     const coordinates = getRandomCoordinates();
     setSelectedCar({ ...car, location: coordinates });
     setCurrentView('details');
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen font-roboto">
-      {currentView === 'table' ? (
-        <>
-          <aside className="w-full lg:w-1/4 p-4">
-            <Filters filters={filters} setFilters={setFilters} applyFilters={fetchCars} />
-          </aside>
-          <main className="flex-grow">
-            <header className="bg-gray-800 text-white py-4 px-6">
-              <h1 className="text-2xl font-bold">Información de Autos</h1>
-            </header>
-            <div className="p-4 border-1 border-gray-100 shadow-md">
-              <Table
-                cars={displayCars}
-                loading={loading}
-                error={error}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                setCurrentPage={setCurrentPage}
-                onSelectCar={handleSelectCar}
-              />
-            </div>
-          </main>
-        </>
-      ) : (
-        <main className="flex-grow">
-          <CarDetails car={selectedCar} onBack={() => setCurrentView('table')} />
-        </main>
-      )}
+<div className="flex flex-col h-screen font-roboto">
+<header className="bg-gray-800 text-white py-4 px-6 flex items-center justify-between relative">
+  <img src="lgoo-drivin.webp" alt="logo drivin" className="w-24 mr-4 lg:absolute lg:left-4"/>
+  <h1 className="text-2xl font-bold flex-grow text-center">Información de Autos</h1>
+  <div className="w-24"></div> {/* Placeholder to maintain space on the right */}
+</header>
+
+  {currentView === 'table' ? (
+    <div className="flex flex-grow flex-col lg:flex-row">
+      <aside className="w-full lg:w-1/4 p-4 bg-gray-100">
+        <Filters filters={filters} setFilters={setFilters} applyFilters={fetchCars} />
+      </aside>
+      <main className="flex-grow p-4 border-1 border-gray-100 shadow-md">
+        <Table
+          cars={displayCars}
+          loading={loading}
+          error={error}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          onSelectCar={handleSelectCar}
+        />
+      </main>
     </div>
+  ) : (
+    <main className="flex-grow p-4 border-1 border-gray-100 shadow-md">
+      <CarDetails car={selectedCar} onBack={() => setCurrentView('table')} />
+    </main>
+  )}
+</div>
+
+
   );
 }
 

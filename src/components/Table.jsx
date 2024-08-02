@@ -7,7 +7,7 @@ const convertTransmission = (transmission) => {
     case 'm':
       return 'Manual';
     default:
-      return 'Desconocido'; // O el valor por defecto que prefieras
+      return 'Desconocido';
   }
 };
 const Table = ({ cars, loading, error, currentPage, totalPages, setCurrentPage, onSelectCar }) => {
@@ -36,7 +36,7 @@ const Table = ({ cars, loading, error, currentPage, totalPages, setCurrentPage, 
               <tr
                 key={index}
                 className='border-b border-gray-400 hover:bg-gray-200 cursor-pointer'
-                onClick={() => onSelectCar(car)} // Manejar selección de coche
+                onClick={() => onSelectCar(car)}
               >
                 <td>{car.class}</td>
                 <td>{car.fuel_type}</td>

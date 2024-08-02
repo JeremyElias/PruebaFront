@@ -18,7 +18,7 @@ const CarDetails = ({ car, onBack }) => {
   }
 
   const { make, model, year, transmission, combination_mpg, location } = car;
-  const coordinates = location || { lat: 0, lon: 0 }; // Default to 0,0 if no location provided
+  const coordinates = location || { lat: 0, lon: 0 }; 
 
   const convertTransmission = (transmission) => {
   switch (transmission) {
@@ -27,7 +27,7 @@ const CarDetails = ({ car, onBack }) => {
     case 'm':
       return 'Manual';
     default:
-      return 'Desconocido'; // O el valor por defecto que prefieras
+      return 'Desconocido';
   }
 };
   return (
