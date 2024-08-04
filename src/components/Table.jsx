@@ -17,7 +17,7 @@ const Table = ({ cars, loading, error, currentPage, totalPages, setCurrentPage, 
   return (
     <div className='bg-white rounded-lg'>
       <div className='overflow-y-auto' style={{ maxHeight: '700px' }}>
-        <table className="text-center w-full table-auto">
+        <table className="text-center w-full ">
           <thead className='bg-white sticky top-0 z-10' style={{ boxShadow: '0 2px 5px -2px rgba(0, 0, 0, 0.7)' }}>
             <tr className='text-gray-700 font-bold'>
               <th>Tipo de Auto</th>

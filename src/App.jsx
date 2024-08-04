@@ -53,7 +53,7 @@ const App = () => {
   
       const url = `https://api.api-ninjas.com/v1/cars?${queryString}&limit=200`;
       const response = await fetch(url, {
-        headers: { 'X-Api-Key': process.env.REACT_APP_API_KEY },
+        headers: { 'X-Api-Key': 'ApiKey***********' },
       });
       
       if (!response.ok) {
